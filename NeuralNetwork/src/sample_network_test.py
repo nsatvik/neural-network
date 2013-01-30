@@ -36,12 +36,14 @@ class NeuralNetwork:
             for node in layer:
                 n = len(node[2])
                 for i in range(len(node[2])):
-                    node[2][i] = random.randint(1,100)
+                    node[2][i] = random.randint(-10,10)
+        
     
     def find(self,index): #Gives the output for new input in an array like [1,0,0] 3 digit input
         self.X.append(self.X[index])
-        self.run(0)
+        result = self.run(0)
         del self.X[-1]
+        return result
         
     def sigmoid(self, x):
         return 1/(1 + math.pow(math.e,-x))
@@ -53,11 +55,11 @@ class NeuralNetwork:
             return self.Layers[-1][0][0]
                 
         for i in range(len(self.X)):
-            for l in range(len(self.Layers)):
-                for num in range(10):
+            for num in range(10):
+                for l in range(len(self.Layers)):
                     self.run_forward_propagation(l, i)
-                    self.run_back_propagation(i)
-                    self.update_nn_weights()
+                self.run_back_propagation(i)
+                self.update_nn_weights()
         
             
     def run_forward_propagation(self, layer, i): # To run the forward prop step with sample i.
@@ -81,17 +83,18 @@ class NeuralNetwork:
     
     
     def run_back_propagation(self, i): #Run back prop for layer and sample i
-        list = []
+        lst = []
         for i in range(len(self.Layers)):
-            list.append(i)
-        list.reverse();
-        for l in list:
+            lst.append(i)
+        lst.reverse()
+        
+        for l in lst:
             for n in range(len(self.Layers[l])):
                 self.Error_nli(n, l, i)
         
         
     def Error_nli(self, n, layer, i): #layer , node n, sample i
-        if layer==len(self.Layers)-1:
+        if layer==(len(self.Layers)-1):
             self.Layers[layer][n][1] = float(self.y[i])-self.Layers[layer][n][0] 
         else:
             
@@ -100,7 +103,7 @@ class NeuralNetwork:
             nextLayer = self.Layers[layer+1]
             for i in range(len(edges)):
                 wE += edges[i]*nextLayer[i][1]
-            self.Layers[layer][n][1] = self.Layers[layer][n][1]*(1-self.Layers[layer][n][1])*wE
+            self.Layers[layer][n][1] = self.Layers[layer][n][0]*(1-self.Layers[layer][n][0])*wE
             
     def update_nn_weights(self):
         for l in range(len(self.Layers)-1):
@@ -146,11 +149,12 @@ class NeuralNetwork:
 def main():
     n_network =  NeuralNetwork('input_file.txt','output_file.txt')
     n_network.display('inpt')
-    n_network.display_neural_network()
+    #n_network.display_neural_network()
     n_network.run(1)
-    n_network.display_neural_network()
-    
-    print (n_network.find(5))
+    #n_network.display_neural_network()
+    print("Neural Network Trained!")
+    for i in range(8):
+        print (n_network.find(i))
     
 if __name__ == '__main__' :
     main()
